@@ -30,7 +30,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
 
 
 # Query the API
-prompt = "What is  a class in python?"
+prompt = "The person in front of me is sad, what can I do to help?"
 
 response = get_completion(prompt)
 
