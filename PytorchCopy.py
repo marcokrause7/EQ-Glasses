@@ -9,6 +9,7 @@ import os
 from torchvision import datasets, transforms
 from torchvision.io import read_image
 from torchvision.transforms import ToTensor #convert an image into tenser which is what will work in pytorch
+import torchvision.transforms as T
 
 #Set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -26,6 +27,7 @@ RESOURCES = {
         "train": ("train.csv", "3f0dfb3d3fd99c811a1299cb947e3131"),
         "test": ("test.csv", "b02c2298636a634e8c2faabbf3ea9a23"),
     }
+
 #1,48,48 is the image shape of our dataset
 
 #Image Classifier Neural Network
@@ -63,29 +65,21 @@ lossFunc = nn.CrossEntropyLoss()
 
 #Training
 if __name__ == "__main__":
-         '''
-    for epoch in range(10): #10 epoches
-        for batch in dataset:
-            X,y = batch
-            X, y = X.to('cuda'), y.to('cuda')
-            yhat = model(X)
-            loss = lossFunc(yhat, y)
-
-            #Apply backprop
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-        print(f"Epoch:{epoch} loss is {loss.item()}") #not sure what this is 
-
-    with open('model_state.pt', 'wb') as file:
-        save(model.state_dict(), file)
-'''
     with open('model_state.pt', 'rb') as file:
         model.load_state_dict(load(file))
 
-    image = Image.open('Image21.jpg')
-    image_tensor = ToTensor()(image).unsqueeze(0).to('cuda')
+    image = Image.open('Image52.jpg') #can put any kind of images
+
+    # Resize the image to 48*48
+    new_size = (48, 48)
+    image = image.resize(new_size)
+    transform = transforms.Compose([
+    transforms.Grayscale(),       # Convert to grayscale
+    ])
+
+    # Apply the transformations
+    image_transformed = transform(image)
+    image_tensor = ToTensor()(image_transformed).unsqueeze(0).to('cuda')
 
     #0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral
     print(torch.argmax(model(image_tensor))) 
@@ -112,3 +106,22 @@ elif torch.argmax(model(image_tensor)) == 5:
 
 elif torch.argmax(model(image_tensor)) == 6:
     print("Emotion: Neutral")
+
+    '''
+    for epoch in range(10): #10 epoches
+        for batch in dataset:
+            X,y = batch
+            X, y = X.to('cuda'), y.to('cuda')
+            yhat = model(X)
+            loss = lossFunc(yhat, y)
+
+            #Apply backprop
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        print(f"Epoch:{epoch} loss is {loss.item()}") #calcalate the loss
+
+    with open('model_state.pt', 'wb') as file:
+        save(model.state_dict(), file)
+    '''
