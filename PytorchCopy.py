@@ -63,6 +63,24 @@ lossFunc = nn.CrossEntropyLoss()
 
 #Training
 if __name__ == "__main__":
+         '''
+    for epoch in range(10): #10 epoches
+        for batch in dataset:
+            X,y = batch
+            X, y = X.to('cuda'), y.to('cuda')
+            yhat = model(X)
+            loss = lossFunc(yhat, y)
+
+            #Apply backprop
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        print(f"Epoch:{epoch} loss is {loss.item()}") #not sure what this is 
+
+    with open('model_state.pt', 'wb') as file:
+        save(model.state_dict(), file)
+'''
     with open('model_state.pt', 'rb') as file:
         model.load_state_dict(load(file))
 
@@ -94,22 +112,3 @@ elif torch.argmax(model(image_tensor)) == 5:
 
 elif torch.argmax(model(image_tensor)) == 6:
     print("Emotion: Neutral")
-
-    '''
-    for epoch in range(10): #10 epoches
-        for batch in dataset:
-            X,y = batch
-            X, y = X.to('cuda'), y.to('cuda')
-            yhat = model(X)
-            loss = lossFunc(yhat, y)
-
-            #Apply backprop
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-        print(f"Epoch:{epoch} loss is {loss.item()}") #not sure what this is 
-
-    with open('model_state.pt', 'wb') as file:
-        save(model.state_dict(), file)
-'''
